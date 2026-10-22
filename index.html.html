@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dulce Dani - Cafetería & Pastelería</title>
+    
+    <!-- Tailwind CSS (Framework de diseño) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            pink: '#F7C5D1',
+                            softPink: '#FDF0F3',
+                            cream: '#FFF9F2',
+                            brown: '#4A2C2A',
+                            darkBrown: '#2D1918',
+                            gold: '#D4AF37',
+                            accent: '#E06B80'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Fuentes y Recursos Externos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-heading { font-family: 'Playfair Display', serif; }
+        .bg-pattern {
+            background-color: #FFF9F2;
+            background-image: radial-gradient(#F7C5D1 0.75px, transparent 0.75px);
+            background-size: 16px 16px;
+        }
+        /* Ocultar scrollbar pero permitir scroll */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-brand-cream text-brand-darkBrown min-h-screen flex flex-col selection:bg-brand-pink selection:text-brand-darkBrown">
+
+    <!-- ========================================== -->
+    <!-- 1. HEADER / NAVEGACIÓN                     -->
+    <!-- ========================================== -->
+    <nav class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-brand-pink/30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <!-- Logo dinámico -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <img id="nav-logo" src="https://ui-avatars.com/api/?name=DD&background=F7C5D1&color=4A2C2A&rounded=true" alt="Logo Dulce Dani" class="w-12 h-12 object-cover rounded-full shadow-inner group-hover:scale-105 transition">
+                    <div>
+                        <span class="text-2xl font-bold font-heading text-brand-brown tracking-wide block leading-none" id="nav-title">Dulce Dani</span>
+                        <span class="text-xs text-brand-accent tracking-widest uppercase font-semibold" id="nav-subtitle">Cafetería & Pastelería</span>
+                    </div>
+                </a>
+
+                <!-- Enlaces Desktop -->
+                <div class="hidden md:flex space-x-8 text-sm font-medium">
+                    <a href="#menu" class="hover:text-brand-accent transition py-2">Menú</a>
+                    <a href="#cotizador" class="hover:text-brand-accent transition py-2 text-brand-accent font-semibold"><i class="fa-solid fa-calculator mr-1"></i>Cotizar</a>
+                    <a href="#nosotros" class="hover:text-brand-accent transition py-2">Nosotros</a>
+                    <a href="#ubicaciones" class="hover:text-brand-accent transition py-2">Sucursales</a>
+                </div>
+
+                <!-- Botón Mobile -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="p-2 rounded-lg text-brand-brown hover:bg-brand-softPink focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Menú Desplegable Mobile -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-brand-pink/30 px-4 pt-2 pb-6 space-y-3 absolute w-full shadow-lg">
+            <a href="#menu" class="block py-2 text-base font-medium border-b border-gray-100 mobile-link">Menú Completo</a>
+            <a href="#cotizador" class="block py-2 text-base font-semibold text-brand-accent border-b border-gray-100 mobile-link">Cotizar Tortas</a>
+            <a href="#ubicaciones" class="block py-2 text-base font-medium border-b border-gray-100 mobile-link">Ubicación y Horarios</a>
+        </div>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- 2. HERO SECTION (Principal)                -->
+    <!-- ========================================== -->
+    <section class="relative overflow-hidden bg-gradient-to-b from-brand-softPink/60 via-brand-cream to-brand-cream py-12 md:py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6 text-center md:text-left">
+                    <!-- Estado de apertura dinámico -->
+                    <div id="status-badge" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border shadow-sm text-xs font-semibold">
+                        <span class="flex h-2 w-2 rounded-full bg-gray-400"></span> Cargando horario...
+                    </div>
+                    
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-brand-darkBrown leading-tight" id="hero-title">
+                        Cargando...
+                    </h1>
+                    <p class="text-lg text-gray-700 max-w-xl" id="hero-desc">
+                        Cargando información del local...
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
+                        <a id="hero-btn-wa" href="#" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-2xl font-semibold shadow-lg hover:shadow-xl transition flex items-center justify-center gap-3 text-lg group">
+                            <i class="fa-brands fa-whatsapp text-2xl group-hover:scale-110 transition"></i> Pedir por WhatsApp
+                        </a>
+                        <a href="#menu" class="bg-brand-brown hover:bg-brand-darkBrown text-white px-8 py-4 rounded-2xl font-semibold shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 text-lg">
+                            Ver Menú Completo
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Imágenes Hero -->
+                <div class="relative">
+                    <div class="absolute -inset-4 bg-gradient-to-r from-brand-pink to-amber-200 rounded-3xl blur-2xl opacity-40"></div>
+                    <div class="relative grid grid-cols-2 gap-4">
+                        <img id="hero-img-1" src="https://placehold.co/600x400/F7C5D1/4A2C2A?text=Café" class="w-full h-56 object-cover rounded-3xl shadow-lg hover:scale-[1.02] transition">
+                        <img id="hero-img-2" src="https://placehold.co/600x400/FDF0F3/4A2C2A?text=Pastelería" class="w-full h-40 object-cover rounded-3xl shadow-lg hover:scale-[1.02] transition mt-8">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 3. SECCIÓN NOSOTROS                        -->
+    <!-- ========================================== -->
+    <section id="nosotros" class="py-16 bg-white border-y border-brand-pink/30">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <span class="text-brand-accent uppercase font-bold text-xs tracking-wider">Nuestra Historia</span>
+            <h2 class="text-3xl font-bold font-heading text-brand-darkBrown mt-2 mb-6">Sobre Dulce Dani</h2>
+            <p id="nosotros-texto" class="text-gray-600 leading-relaxed text-lg">
+                Cargando información de nosotros...
+            </p>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 4. MENÚ INTERACTIVO CON FILTROS            -->
+    <!-- ========================================== -->
+    <section id="menu" class="py-16 bg-brand-cream">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-10">
+                <span class="text-brand-accent uppercase font-bold text-xs tracking-wider" id="menu-subtitle">SABORES MÁGICOS</span>
+                <h2 class="text-4xl font-bold text-brand-darkBrown mt-1 font-heading" id="menu-title">Nuestras Especialidades</h2>
+                
+                <!-- Filtros dinámicos se inyectan aquí -->
+                <div class="flex flex-wrap justify-center gap-2 mt-8" id="menu-filtros">
+                    <button class="bg-brand-brown text-white px-5 py-2.5 rounded-full text-sm font-medium shadow">Todos</button>
+                    <!-- Los demás se generan vía JS -->
+                </div>
+            </div>
+
+            <!-- Contenedor del Menú Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="menu-grid">
+                <!-- Se inyectan productos vía JS -->
+                <div class="text-center col-span-full py-10 text-gray-500"><i class="fa-solid fa-circle-notch fa-spin text-2xl mb-2"></i><br>Cargando menú...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 5. COTIZADOR INTERACTIVO DE TORTAS         -->
+    <!-- ========================================== -->
+    <section id="cotizador" class="py-16 bg-white border-y border-brand-pink/30 relative">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-pattern rounded-3xl p-8 md:p-12 shadow-xl border border-brand-pink/40">
+                <div class="text-center mb-8">
+                    <span class="bg-brand-pink text-brand-brown px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide">Herramienta Interactiva</span>
+                    <h2 class="text-3xl font-bold text-brand-darkBrown font-heading mt-3">Cotiza tu Torta de Evento</h2>
+                    <p class="text-gray-600 text-sm mt-1">Calcula un estimado para tu celebración y envíanos la solicitud directo a WhatsApp.</p>
+                </div>
+
+                <div class="grid md:grid-cols-5 gap-8 items-start">
+                    <!-- Formulario de Selección -->
+                    <div class="space-y-5 md:col-span-3 bg-white/80 p-6 rounded-2xl border border-gray-100 shadow-sm backdrop-blur">
+                        <div>
+                            <label class="block text-sm font-bold text-brand-darkBrown mb-2">1. Tamaño (Personas / Porciones)</label>
+                            <select id="cotizador-tamano" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-brand-pink outline-none cursor-pointer">
+                                <option value="0">Cargando tamaños...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-brand-darkBrown mb-2">2. Estilo y Sabor Principal</label>
+                            <select id="cotizador-sabor" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-brand-pink outline-none cursor-pointer">
+                                <option value="0">Cargando sabores...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-brand-darkBrown mb-2">3. Agregados o Servicios Extra</label>
+                            <div id="cotizador-extras" class="space-y-2 text-sm text-gray-700 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                                Cargando extras...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel de Resultado -->
+                    <div class="bg-brand-darkBrown rounded-2xl p-6 md:col-span-2 text-center space-y-4 shadow-md text-white sticky top-24 flex flex-col justify-center h-full">
+                        <span class="text-xs font-semibold text-brand-pink uppercase tracking-widest">Valor Referencial Estimado</span>
+                        <div class="text-4xl font-bold text-white font-heading tracking-wide" id="precio-total-cotizacion">$0</div>
+                        <p class="text-xs text-gray-400">Cotización sujeta a confirmación de fecha y disponibilidad de agenda.</p>
+                        
+                        <button id="btn-enviar-cotizacion" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 mt-4 group">
+                            <i class="fa-brands fa-whatsapp text-xl group-hover:scale-110 transition"></i> Solicitar por WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 6. TESTIMONIOS (PRUEBA SOCIAL)             -->
+    <!-- ========================================== -->
+    <section id="testimonios" class="py-16 bg-brand-cream">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10">
+                <span class="text-brand-accent uppercase font-bold text-xs tracking-wider">Clientes Felices</span>
+                <h2 class="text-3xl font-bold font-heading text-brand-darkBrown mt-1">Lo que dicen sobre nosotros</h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6" id="testimonios-grid">
+                <!-- Se inyectan testimonios vía JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 7. SUCURSALES E INFORMACIÓN                -->
+    <!-- ========================================== -->
+    <section id="ubicaciones" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-brand-darkBrown font-heading">Nuestras Sucursales</h2>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8" id="sucursales-grid">
+                <!-- Se inyectan sucursales vía JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 8. FOOTER / PIE DE PÁGINA                  -->
+    <!-- ========================================== -->
+    <footer class="bg-brand-darkBrown text-white py-12 border-t-4 border-brand-pink">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-8 mb-8 text-center md:text-left">
+                <!-- Col 1 -->
+                <div class="space-y-4">
+                    <h3 class="text-2xl font-bold font-heading text-brand-pink" id="footer-nombre">Dulce Dani</h3>
+                    <p class="text-sm text-gray-300" id="footer-slogan">Cargando eslogan...</p>
+                    <a id="footer-instagram" href="#" target="_blank" class="inline-flex items-center gap-2 text-brand-pink hover:text-white transition">
+                        <i class="fa-brands fa-instagram text-xl"></i> Síguenos en Instagram
+                    </a>
+                </div>
+                <!-- Col 2 -->
+                <div class="space-y-2 text-sm text-gray-300">
+                    <h4 class="font-bold text-brand-pink mb-3">Contacto Directo</h4>
+                    <p><i class="fa-solid fa-phone w-5"></i> <span id="footer-telefono">Cargando...</span></p>
+                    <p><i class="fa-solid fa-clock w-5"></i> <span id="footer-horario">Cargando...</span></p>
+                </div>
+                <!-- Col 3 -->
+                <div class="space-y-2 text-sm text-gray-300">
+                    <h4 class="font-bold text-brand-pink mb-3">Ubicaciones</h4>
+                    <p><i class="fa-solid fa-location-dot w-5 text-brand-accent"></i> <span id="footer-dir-hualqui">Cargando...</span></p>
+                    <p class="mt-2"><i class="fa-solid fa-location-dot w-5 text-brand-accent"></i> <span id="footer-dir-chiguayante">Cargando...</span></p>
+                </div>
+            </div>
+            <div class="border-t border-white/10 pt-6 text-center text-xs text-gray-400">
+                <p id="footer-copyright">© 2026 Dulce Dani. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- BOTÓN FLOTANTE WHATSAPP                    -->
+    <!-- ========================================== -->
+    <a id="btn-flotante-wa" href="#" target="_blank" class="fixed bottom-6 right-6 z-50 bg-emerald-500 hover:bg-emerald-600 text-white p-4 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition duration-300">
+        <i class="fa-brands fa-whatsapp text-3xl"></i>
+    </a>
+
+    <!-- ========================================== -->
+    <!-- LOGICA JAVASCRIPT (SINGLE PAGE APP)        -->
+    <!-- ========================================== -->
+    <script>
+        // --- 1. CONFIGURACIÓN PRINCIPAL ---
+        // INSTRUCCIÓN: Cuando tengas tu Google Sheets listo, pega el ID de tu hoja aquí.
+        // Si está vacío (''), el sistema cargará los Datos Mock (Fallback) automáticamente.
+        const GOOGLE_SHEET_ID = '1spw4MLp6FRJRMZUDaErfEdKm16scBxCqAX4bV3f2d38'; 
+        
+        // --- 2. SISTEMA DE SEGURIDAD (ANTI-XSS) ---
+        // Evita inyección de código malicioso en los textos editables por el cliente.
+        function sanitizarHTML(texto) {
+            if (!texto) return '';
+            const mapa = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;', "/": '&#x2F;' };
+            const reg = /[&<>"'/]/ig;
+            return String(texto).replace(reg, (match) => mapa[match]);
+        }
+
+        function formatoCLP(numero) {
+            return '$' + Number(numero).toLocaleString('es-CL');
+        }
+
+        function generarUrlWa(telefono, mensaje) {
+            // Limpia el teléfono de espacios o símbolos, asume código de Chile +56 si empieza con 9
+            let fonoStr = String(telefono).replace(/\D/g, '');
+            if(fonoStr.startsWith('9') && fonoStr.length === 8) fonoStr = '569' + fonoStr;
+            else if(fonoStr.startsWith('9') && fonoStr.length === 9) fonoStr = '56' + fonoStr;
+            return `https://wa.me/${fonoStr}?text=${encodeURIComponent(mensaje)}`;
+        }
+
+        // --- 3. DATOS DE RESPALDO (MOCK / FALLBACK) ---
+        // Estos datos se mostrarán si la hoja de Google no está conectada o falla.
+        const datosMock = {
+            config: {
+                wa_telefono: "+56991510196",
+                hero_titulo: "Un refugio de delicias en <span class='text-brand-accent italic'>Hualqui</span> y <span class='text-brand-accent italic'>Chiguayante</span>",
+                hero_descripcion: "Descubre nuestros cafés de especialidad, pastelería fina y exquisitas opciones saladas. Preparados con amor.",
+                hero_img1: "https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=600&q=80",
+                hero_img2: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80",
+                nosotros_texto: "En Dulce Dani nacimos con el sueño de ofrecer un refugio cálido en la histórica comuna de Hualqui. Nos especializamos en pastelería artesanal, café de especialidad y opciones saladas gourmet. Gracias a tu preferencia, ahora también estamos en Chiguayante.",
+                footer_slogan: "El rincón más dulce de Hualqui y Chiguayante. Tradición, sabor y calidez en cada taza.",
+                footer_instagram_url: "https://instagram.com/pasteleria_dulcedani",
+                footer_dir_hualqui: "Condell #686 (Entre O'Higgins y Diego Portales), Hualqui.",
+                footer_dir_chiguayante: "Sucursal Chiguayante (Dentro de Supermercado Líder).",
+                footer_horario: "Lunes a Domingo de 09:30 a 21:00 hrs",
+                footer_copyright: "© 2026 Dulce Dani. Diseño Web Optimizado."
+            },
+            menu: [
+                { categoria: "Tortas", nombre: "Torta Hojarasca Manjar", descripcion: "Tradicional receta casera, rellena de manjar artesanal y nueces.", precio: "25000", etiqueta: "Destacado", imagen: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=600&q=80", disponible: "SI" },
+                { categoria: "Cafeteria", nombre: "Capuchino Especial", descripcion: "Espresso doble con leche cremada y toque de canela.", precio: "3500", etiqueta: "", imagen: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80", disponible: "SI" },
+                { categoria: "Salado", nombre: "Brunch Dulce Dani", descripcion: "Huevos revueltos, tostadas palta, jugo natural y café.", precio: "7800", etiqueta: "Muy Pedido", imagen: "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=600&q=80", disponible: "SI" },
+                { categoria: "Dulces", nombre: "Cheesecake Frutos Rojos", descripcion: "Base crocante, crema de queso y salsa de frutos del bosque.", precio: "3900", etiqueta: "", imagen: "https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=600&q=80", disponible: "SI" }
+            ],
+            cotizador: [
+                { tipo: "tamano", nombre: "10 Personas", precio: "20000", disponible: "SI" },
+                { tipo: "tamano", nombre: "20 Personas", precio: "35000", disponible: "SI" },
+                { tipo: "tamano", nombre: "50 Personas (Evento)", precio: "85000", disponible: "SI" },
+                { tipo: "sabor", nombre: "Bizcocho Tradicional (Manjar/Crema)", precio: "0", disponible: "SI" },
+                { tipo: "sabor", nombre: "Hojarasca o Panqueque (+ valor extra)", precio: "5000", disponible: "SI" },
+                { tipo: "extra", nombre: "Diseño en Fondant", precio: "12000", disponible: "SI" },
+                { tipo: "extra", nombre: "Despacho a Domicilio (Hualqui/Chiguayante)", precio: "3500", disponible: "SI" }
+            ],
+            testimonios: [
+                { autor: "DeConceAChile", estrellas: "5", comentario: "Hoy visitamos la mejor pastelería de Hualqui. La atención es cálida y sus tortas son mágicas.", fecha: "Hace 1 año", avatar: "https://ui-avatars.com/api/?name=DC&background=E06B80&color=fff" },
+                { autor: "María González", estrellas: "5", comentario: "Encargamos una torta de matrimonio y superó todas nuestras expectativas. El diseño impecable y el sabor increíble.", fecha: "Hace 2 meses", avatar: "https://ui-avatars.com/api/?name=MG&background=F7C5D1&color=4A2C2A" },
+                { autor: "Carlos Vera", estrellas: "4", comentario: "Feliz con la sucursal en Chiguayante. Sus cafés de especialidad son el mejor panorama para las tardes.", fecha: "Hace 1 mes", avatar: "https://ui-avatars.com/api/?name=CV&background=FDF0F3&color=4A2C2A" }
+            ],
+            sucursales: [
+                { nombre: "Dulce Dani - Hualqui", direccion: "Calle Condell #686 (Entre O'Higgins y Diego Portales)", horario: "Lunes a Domingo: 09:30 h a 21:00 h", telefono: "442 874638", link_mapa: "https://maps.google.com/?q=Calle+Condell+686+Hualqui", etiqueta: "Casa Matriz" },
+                { nombre: "Dulce Dani - Chiguayante", direccion: "Sucursal Chiguayante (Dentro del Supermercado Líder Express)", horario: "Lunes a Domingo: 09:30 h a 21:00 h", telefono: "+56 9 91510196", link_mapa: "#", etiqueta: "Nueva Sucursal" }
+            ]
+        };
+
+        // --- 4. CONTROLADOR DE LA APLICACIÓN (LÓGICA PRINCIPAL) ---
+        let appState = {
+            waPhone: "+56991510196",
+            menuData: [],
+            cotizadorData: []
+        };
+
+        async function initApp() {
+            if (!GOOGLE_SHEET_ID) {
+                console.log("No se detectó ID de Google Sheets. Cargando datos de respaldo (Mock Data)...");
+                renderizarTodo(datosMock);
+                iniciarInteractividad();
+                return;
+            }
+
+            try {
+                // Función auxiliar para traer una pestaña específica desde Google Sheets
+                const fetchSheetData = async (sheetName) => {
+                    const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+                    const response = await fetch(url);
+                    if(!response.ok) throw new Error("Network error");
+                    const text = await response.text();
+                    const json = JSON.parse(text.substring(47, text.length - 2));
+                    return json.table.rows;
+                };
+
+                // Promesas en paralelo para mayor velocidad
+                const [configRows, menuRows, cotizadorRows, testRows, sucRows] = await Promise.all([
+                    fetchSheetData('Configuracion_General').catch(() => null),
+                    fetchSheetData('Menu').catch(() => null),
+                    fetchSheetData('Cotizador_Tortas').catch(() => null),
+                    fetchSheetData('Testimonios').catch(() => null),
+                    fetchSheetData('Sucursales').catch(() => null)
+                ]);
+
+                // Procesar configuración general
+                let configObj = {};
+                if(configRows) {
+                    configRows.forEach(r => {
+                        const clave = r.c[0]?.v;
+                        const valor = r.c[1]?.v;
+                        if(clave) configObj[clave] = valor;
+                    });
+                } else { configObj = datosMock.config; }
+
+                // Procesar Menú
+                let menuList = [];
+                if(menuRows) {
+                    menuList = menuRows.map(r => ({
+                        categoria: r.c[0]?.v || '',
+                        nombre: r.c[1]?.v || '',
+                        descripcion: r.c[2]?.v || '',
+                        precio: r.c[3]?.v || 0,
+                        etiqueta: r.c[4]?.v || '',
+                        imagen: r.c[5]?.v || '',
+                        disponible: (r.c[6]?.v || 'SI').toString().toUpperCase()
+                    })).filter(item => item.disponible === 'SI');
+                } else { menuList = datosMock.menu; }
+
+                // Procesar Cotizador
+                let cotiList = [];
+                if(cotizadorRows) {
+                    cotiList = cotizadorRows.map(r => ({
+                        tipo: r.c[0]?.v || '',
+                        nombre: r.c[1]?.v || '',
+                        precio: r.c[2]?.v || 0,
+                        disponible: (r.c[3]?.v || 'SI').toString().toUpperCase()
+                    })).filter(item => item.disponible === 'SI');
+                } else { cotiList = datosMock.cotizador; }
+
+                // Procesar Testimonios y Sucursales (Similar mapeo)
+                let testList = testRows ? testRows.map(r => ({
+                    autor: r.c[0]?.v || '', estrellas: r.c[1]?.v || '5', comentario: r.c[2]?.v || '', fecha: r.c[3]?.v || '', avatar: r.c[4]?.v || ''
+                })) : datosMock.testimonios;
+
+                let sucList = sucRows ? sucRows.map(r => ({
+                    nombre: r.c[0]?.v || '', direccion: r.c[1]?.v || '', horario: r.c[2]?.v || '', telefono: r.c[3]?.v || '', link_mapa: r.c[4]?.v || '#', etiqueta: r.c[5]?.v || ''
+                })) : datosMock.sucursales;
+
+                // Renderizar los datos obtenidos
+                renderizarTodo({
+                    config: configObj,
+                    menu: menuList,
+                    cotizador: cotiList,
+                    testimonios: testList,
+                    sucursales: sucList
+                });
+
+                iniciarInteractividad();
+
+            } catch (error) {
+                console.error("Error al cargar Google Sheets, usando Mock Data.", error);
+                renderizarTodo(datosMock);
+                iniciarInteractividad();
+            }
+        }
+
+        // --- 5. FUNCIONES DE RENDERIZADO (INYECTAR HTML) ---
+        function renderizarTodo(data) {
+            appState.waPhone = data.config.wa_telefono || "56991510196";
+            appState.menuData = data.menu;
+            appState.cotizadorData = data.cotizador;
+
+            // Inyectar Configuración
+            document.getElementById('hero-title').innerHTML = data.config.hero_titulo ? data.config.hero_titulo : datosMock.config.hero_titulo; 
+            document.getElementById('hero-desc').innerText = sanitizarHTML(data.config.hero_descripcion || "");
+            if(data.config.hero_img1) document.getElementById('hero-img-1').src = data.config.hero_img1;
+            if(data.config.hero_img2) document.getElementById('hero-img-2').src = data.config.hero_img2;
+            document.getElementById('nosotros-texto').innerText = sanitizarHTML(data.config.nosotros_texto || "");
+            document.getElementById('footer-slogan').innerText = sanitizarHTML(data.config.footer_slogan || "");
+            document.getElementById('footer-dir-hualqui').innerText = sanitizarHTML(data.config.footer_dir_hualqui || "");
+            document.getElementById('footer-dir-chiguayante').innerText = sanitizarHTML(data.config.footer_dir_chiguayante || "");
+            document.getElementById('footer-telefono').innerText = sanitizarHTML(data.config.wa_telefono || "");
+            document.getElementById('footer-horario').innerText = sanitizarHTML(data.config.footer_horario || "");
+            document.getElementById('footer-copyright').innerText = sanitizarHTML(data.config.footer_copyright || "");
+            
+            const instagramUrl = data.config.footer_instagram_url || "#";
+            document.getElementById('footer-instagram').href = instagramUrl;
+
+            // Enlaces WhatsApp principales
+            const urlWaGeneral = generarUrlWa(appState.waPhone, "Hola Dulce Dani, quisiera hacer una consulta/pedido.");
+            document.getElementById('hero-btn-wa').href = urlWaGeneral;
+            document.getElementById('btn-flotante-wa').href = urlWaGeneral;
+
+            // Renderizar Componentes
+            renderMenuCategorias(appState.menuData);
+            renderMenuGrid(appState.menuData, 'Todos');
+            renderCotizadorOpciones(appState.cotizadorData);
+            renderTestimonios(data.testimonios);
+            renderSucursales(data.sucursales);
+        }
+
+        function renderMenuCategorias(menuData) {
+            const container = document.getElementById('menu-filtros');
+            // Obtener categorías únicas
+            const categorias = [...new Set(menuData.map(item => item.categoria))].filter(Boolean);
+            
+            let html = `<button onclick="filtrarMenu('Todos')" class="menu-tab-btn active bg-brand-brown text-white px-5 py-2.5 rounded-full text-sm font-medium shadow transition">Todos</button>`;
+            
+            categorias.forEach(cat => {
+                html += `<button onclick="filtrarMenu('${sanitizarHTML(cat)}')" class="menu-tab-btn bg-white hover:bg-brand-softPink text-brand-brown border border-brand-pink/50 px-5 py-2.5 rounded-full text-sm font-medium shadow-sm transition">${sanitizarHTML(cat)}</button>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // Variable global para filtrarMenu
+        window.filtrarMenu = function(categoriaFilter) {
+            // Actualizar UI Botones
+            const botones = document.querySelectorAll('.menu-tab-btn');
+            botones.forEach(btn => {
+                if(btn.innerText === categoriaFilter || (categoriaFilter === 'Todos' && btn.innerText === 'Todos')){
+                    btn.className = "menu-tab-btn active bg-brand-brown text-white px-5 py-2.5 rounded-full text-sm font-medium shadow transition";
+                } else {
+                    btn.className = "menu-tab-btn bg-white hover:bg-brand-softPink text-brand-brown border border-brand-pink/50 px-5 py-2.5 rounded-full text-sm font-medium shadow-sm transition";
+                }
+            });
+            renderMenuGrid(appState.menuData, categoriaFilter);
+        };
+
+        function renderMenuGrid(menuData, categoriaFilter) {
+            const container = document.getElementById('menu-grid');
+            container.innerHTML = '';
+            
+            const filtrados = categoriaFilter === 'Todos' ? menuData : menuData.filter(item => item.categoria === categoriaFilter);
+
+            if(filtrados.length === 0){
+                container.innerHTML = `<p class="col-span-full text-center text-gray-500 py-8">No hay productos en esta categoría.</p>`;
+                return;
+            }
+
+            filtrados.forEach(prod => {
+                const badgeHTML = prod.etiqueta ? `<span class="absolute top-3 right-3 bg-brand-brown text-white text-xs px-3 py-1 rounded-full font-semibold shadow">${sanitizarHTML(prod.etiqueta)}</span>` : '';
+                const imgSrc = prod.imagen || 'https://placehold.co/600x400/FDF0F3/4A2C2A?text=Producto';
+                const msgPedir = `Hola, quisiera pedir: ${prod.nombre}`;
+                const waLink = generarUrlWa(appState.waPhone, msgPedir);
+
+                const card = `
+                <div class="bg-white rounded-3xl p-5 shadow-sm hover:shadow-xl transition-shadow border border-brand-pink/20 flex flex-col justify-between h-full group">
+                    <div>
+                        <div class="relative overflow-hidden rounded-2xl mb-4 h-48 bg-brand-cream">
+                            <img src="${imgSrc}" alt="${sanitizarHTML(prod.nombre)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                            ${badgeHTML}
+                        </div>
+                        <div class="flex justify-between items-start mb-2 gap-2">
+                            <h3 class="text-lg font-bold font-heading text-brand-brown leading-tight">${sanitizarHTML(prod.nombre)}</h3>
+                            <span class="text-brand-accent font-bold whitespace-nowrap">${formatoCLP(prod.precio)}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-5 line-clamp-3">${sanitizarHTML(prod.descripcion)}</p>
+                    </div>
+                    <a href="${waLink}" target="_blank" class="w-full bg-brand-softPink hover:bg-brand-pink text-brand-brown font-semibold py-2.5 rounded-xl text-center text-sm transition mt-auto">
+                        Pedir Producto
+                    </a>
+                </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+
+        function renderCotizadorOpciones(cotizadorData) {
+            const selTamano = document.getElementById('cotizador-tamano');
+            const selSabor = document.getElementById('cotizador-sabor');
+            const contExtras = document.getElementById('cotizador-extras');
+            
+            selTamano.innerHTML = '';
+            selSabor.innerHTML = '';
+            contExtras.innerHTML = '';
+
+            cotizadorData.forEach(item => {
+                const val = Number(item.precio);
+                const txt = sanitizarHTML(item.nombre);
+                
+                if(item.tipo.toLowerCase() === 'tamano'){
+                    selTamano.innerHTML += `<option value="${val}">${txt} - ${formatoCLP(val)}</option>`;
+                } else if(item.tipo.toLowerCase() === 'sabor'){
+                    const adic = val > 0 ? ` (+${formatoCLP(val)})` : '';
+                    selSabor.innerHTML += `<option value="${val}">${txt}${adic}</option>`;
+                } else if(item.tipo.toLowerCase() === 'extra'){
+                    contExtras.innerHTML += `
+                    <label class="flex items-center gap-2 cursor-pointer p-1 rounded hover:bg-brand-softPink transition">
+                        <input type="checkbox" value="${val}" data-nombre="${txt}" class="coti-extra rounded border-brand-pink text-brand-accent focus:ring-brand-accent cursor-pointer">
+                        <span>${txt} (+${formatoCLP(val)})</span>
+                    </label>
+                    `;
+                }
+            });
+
+            // Listeners para calcular en tiempo real
+            selTamano.addEventListener('change', calcularCotizacion);
+            selSabor.addEventListener('change', calcularCotizacion);
+            document.querySelectorAll('.coti-extra').forEach(cb => cb.addEventListener('change', calcularCotizacion));
+            
+            calcularCotizacion(); // Calculo Inicial
+        }
+
+        function renderTestimonios(testData) {
+            const cont = document.getElementById('testimonios-grid');
+            cont.innerHTML = '';
+            testData.forEach(t => {
+                const estrellasNum = Number(t.estrellas) || 5;
+                let starsHtml = '';
+                for(let i=0; i<5; i++) {
+                    starsHtml += `<i class="fa-solid fa-star ${i < estrellasNum ? 'text-yellow-400' : 'text-gray-300'}"></i>`;
+                }
+                const avatar = t.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.autor)}&background=F7C5D1&color=4A2C2A`;
+
+                cont.innerHTML += `
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-brand-pink/20 h-full flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 text-sm mb-3">${starsHtml}</div>
+                        <p class="text-gray-700 text-sm italic mb-4">"${sanitizarHTML(t.comentario)}"</p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-4 border-t border-gray-100">
+                        <img src="${avatar}" class="w-10 h-10 rounded-full object-cover">
+                        <div>
+                            <h4 class="font-bold text-sm text-brand-darkBrown leading-none">${sanitizarHTML(t.autor)}</h4>
+                            <span class="text-xs text-gray-400">${sanitizarHTML(t.fecha)}</span>
+                        </div>
+                    </div>
+                </div>`;
+            });
+        }
+
+        function renderSucursales(sucData) {
+            const cont = document.getElementById('sucursales-grid');
+            cont.innerHTML = '';
+            sucData.forEach(s => {
+                const badge = s.etiqueta ? `<span class="bg-brand-pink text-brand-brown font-bold text-xs px-3 py-1 rounded-full">${sanitizarHTML(s.etiqueta)}</span>` : '';
+                cont.innerHTML += `
+                <div class="bg-brand-cream rounded-3xl p-8 border border-brand-pink/40 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            ${badge}
+                        </div>
+                        <h3 class="text-2xl font-bold font-heading text-brand-darkBrown mb-4">${sanitizarHTML(s.nombre)}</h3>
+                        <div class="space-y-3 text-sm text-gray-700 my-6">
+                            <p class="flex items-start gap-3"><i class="fa-solid fa-location-dot text-brand-accent text-lg mt-0.5"></i> <span>${sanitizarHTML(s.direccion)}</span></p>
+                            <p class="flex items-center gap-3"><i class="fa-solid fa-clock text-brand-accent text-lg"></i> <span>${sanitizarHTML(s.horario)}</span></p>
+                            <p class="flex items-center gap-3"><i class="fa-solid fa-phone text-brand-accent text-lg"></i> <span>${sanitizarHTML(s.telefono)}</span></p>
+                        </div>
+                    </div>
+                    ${s.link_mapa && s.link_mapa !== '#' ? 
+                    `<a href="${s.link_mapa}" target="_blank" class="w-full bg-brand-brown hover:bg-brand-darkBrown text-white font-medium py-3 rounded-xl text-center text-sm transition flex items-center justify-center gap-2 mt-4"><i class="fa-solid fa-map-location-dot"></i> Ver en Mapa</a>` 
+                    : ''}
+                </div>`;
+            });
+        }
+
+        // --- 6. LÓGICA DE INTERACTIVIDAD ---
+        function iniciarInteractividad() {
+            // Mobile Menu Toggle
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+            const links = document.querySelectorAll('.mobile-link');
+            
+            btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+            links.forEach(l => l.addEventListener('click', () => menu.classList.add('hidden')));
+
+            // Evaluar horario de apertura local (Chile asume horario de sistema de cliente)
+            evaluarEstadoApertura();
+            setInterval(evaluarEstadoApertura, 60000); // Actualizar cada minuto
+        }
+
+        function evaluarEstadoApertura() {
+            const badge = document.getElementById('status-badge');
+            const ahora = new Date();
+            const horas = ahora.getHours();
+            const minutos = ahora.getMinutes();
+            const tiempoMinutos = horas * 60 + minutos;
+
+            // Rango de 09:30 a 21:00 (570 a 1260 minutos)
+            const abre = 9 * 60 + 30;
+            const cierra = 21 * 60;
+
+            if(tiempoMinutos >= abre && tiempoMinutos < cierra) {
+                badge.className = 'inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-emerald-200 shadow-sm text-xs font-bold text-emerald-700';
+                badge.innerHTML = '<span class="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span> Abierto Hoy hasta las 21:00';
+            } else {
+                badge.className = 'inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-red-200 shadow-sm text-xs font-bold text-red-700';
+                badge.innerHTML = '<span class="flex h-2 w-2 rounded-full bg-red-500"></span> Local Cerrado Ahora';
+            }
+        }
+
+        function calcularCotizacion() {
+            const selTamano = document.getElementById('cotizador-tamano');
+            const selSabor = document.getElementById('cotizador-sabor');
+            
+            const pTamano = Number(selTamano.value || 0);
+            const pSabor = Number(selSabor.value || 0);
+            
+            let pExtras = 0;
+            let extrasArr = [];
+            document.querySelectorAll('.coti-extra:checked').forEach(cb => {
+                pExtras += Number(cb.value);
+                extrasArr.push(cb.getAttribute('data-nombre'));
+            });
+
+            const total = pTamano + pSabor + pExtras;
+            document.getElementById('precio-total-cotizacion').innerText = formatoCLP(total);
+
+            // Preparar botón enviar WhatsApp
+            const nTamano = selTamano.options[selTamano.selectedIndex]?.text.split(' - ')[0] || '';
+            const nSabor = selSabor.options[selSabor.selectedIndex]?.text.split(' (+')[0] || '';
+            
+            const msg = `*Cotización de Torta Evento* 🎂\n\n` +
+                        `- Tamaño: ${nTamano}\n` +
+                        `- Sabor: ${nSabor}\n` +
+                        `- Extras: ${extrasArr.length > 0 ? extrasArr.join(', ') : 'Ninguno'}\n\n` +
+                        `*Estimado referencial:* ${formatoCLP(total)}\n\n` +
+                        `Hola, quisiera confirmar disponibilidad para este pedido.`;
+                        
+            document.getElementById('btn-enviar-cotizacion').onclick = function() {
+                window.open(generarUrlWa(appState.waPhone, msg), '_blank');
+            };
+        }
+
+        // --- 7. INICIAR LA APP AL CARGAR LA PÁGINA ---
+        document.addEventListener('DOMContentLoaded', initApp);
+
+    </script>
+</body>
+</html>
