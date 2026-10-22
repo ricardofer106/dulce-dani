@@ -464,8 +464,8 @@
                 })) : datosMock.testimonios;
 
                 let sucList = sucRows ? sucRows.map(r => ({
-                    nombre: r.c[0]?.v || '', direccion: r.c[1]?.v || '', horario: r.c[2]?.v || '', telefono: r.c[3]?.v || '', link_mapa: r.c[4]?.v || '#', etiqueta: r.c[5]?.v || ''
-                })) : datosMock.sucursales;
+                nombre: r.c[0]?.v || '', direccion: r.c[1]?.v || '', horario: r.c[2]?.v || '', telefono: r.c[3]?.v || '', link_mapa: r.c[4]?.v || '#', etiqueta: r.c[5]?.v || ''
+                })).filter(s => s.nombre && s.nombre.toLowerCase() !== 'nombre' && s.nombre.toLowerCase() !== 'disponible') : datosMock.sucursales;
 
                 renderizarTodo({
                     config: configObj,
