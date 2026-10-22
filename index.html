@@ -650,33 +650,34 @@
             calcularCotizacion();
         }
 
-        function renderTestimonios(testData) {
-            const cont = document.getElementById('testimonios-grid');
-            cont.innerHTML = '';
-            testData.forEach(t => {
-                const estrellasNum = Number(t.estrellas) || 5;
-                let starsHtml = '';
-                for(let i=0; i<5; i++) {
-                    starsHtml += `<i class="fa-solid fa-star ${i < estrellasNum ? 'text-yellow-400' : 'text-gray-300'}"></i>`;
-                }
-                const avatar = sanitizarURL(t.avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.autor)}&background=F7C5D1&color=4A2C2A`;
-
-                cont.innerHTML += `
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-brand-pink/20 h-full flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center gap-1 text-sm mb-3">${starsHtml}</div>
-                        <p class="text-gray-700 text-sm italic mb-4">"${sanitizarHTML(t.comentario)}"</p>
-                    </div>
-                    <div class="flex items-center gap-3 pt-4 border-t border-gray-100">
-                        <img src="${avatar}" class="w-10 h-10 rounded-full object-cover">
-                        <div>
-                            <h4 class="font-bold text-sm text-brand-darkBrown leading-none">${sanitizarHTML(t.autor)}</h4>
-                            <span class="text-xs text-gray-400">${sanitizarHTML(t.fecha)}</span>
-                        </div>
-                    </div>
-                </div>`;
-            });
+       function renderTestimonios(testData) {
+    const cont = document.getElementById('testimonios-grid');
+    cont.innerHTML = '';
+    
+    testData.forEach(t => {
+        const estrellasNum = Number(t.estrellas) || 5;
+        let starsHtml = '';
+        for(let i=0; i<5; i++) {
+            starsHtml += `<i class="fa-solid fa-star ${i < estrellasNum ? 'text-yellow-400' : 'text-gray-300'}"></i>`;
         }
+        
+        const comentarioLimpio = sanitizarHTML(t.comentario).replace(/^"+|"+$/g, '');
+
+        cont.innerHTML += `
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-brand-pink/20 h-full flex flex-col justify-between">
+            <div>
+                <div class="flex items-center gap-1 text-sm mb-3">${starsHtml}</div>
+                <p class="text-gray-700 text-sm italic mb-4">"${comentarioLimpio}"</p>
+            </div>
+            <div class="flex items-center gap-3 pt-4 border-t border-gray-100">
+                <div>
+                    <h4 class="font-bold text-sm text-brand-darkBrown leading-none">${sanitizarHTML(t.autor)}</h4>
+                    <span class="text-xs text-gray-400">${sanitizarHTML(t.fecha)}</span>
+                </div>
+            </div>
+        </div>`;
+    });
+}
 
         function renderSucursales(sucData) {
             const cont = document.getElementById('sucursales-grid');
