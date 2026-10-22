@@ -58,7 +58,7 @@
             <div class="flex justify-between h-20 items-center">
                 <!-- Logo dinámico -->
                 <a href="#" class="flex items-center gap-3 group">
-                    <img id="nav-logo" src="https://i.ibb.co/JbVy6Nd/dulce-dani.jpg" alt="Logo Dulce Dani" class="w-12 h-12 object-cover rounded-full shadow-inner group-hover:scale-105 transition">
+                    <img id="nav-logo" src="https://i.ibb.co/67ZV4rdh/dulce-dani.jpg" alt="Logo Dulce Dani" class="w-12 h-12 object-cover rounded-full shadow-inner group-hover:scale-105 transition">
                     <div>
                         <span class="text-2xl font-bold font-heading text-brand-brown tracking-wide block leading-none" id="nav-title">Dulce Dani</span>
                         <span class="text-xs text-brand-accent tracking-widest uppercase font-semibold" id="nav-subtitle">Cafetería & Pastelería</span>
@@ -144,7 +144,7 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- 4. MENÚ INTERACTIVO CON FILTROS            -->
+    <!-- 4. MENÚ INTERACTIVO CON FILTROS Y CARRUSEL  -->
     <!-- ========================================== -->
     <section id="menu" class="py-16 bg-brand-cream">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -155,14 +155,23 @@
                 <!-- Filtros dinámicos se inyectan aquí -->
                 <div class="flex flex-wrap justify-center gap-2 mt-8" id="menu-filtros">
                     <button class="bg-brand-brown text-white px-5 py-2.5 rounded-full text-sm font-medium shadow">Todos</button>
-                    <!-- Los demás se generan vía JS -->
                 </div>
             </div>
 
             <!-- Contenedor del Menú Grid -->
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="menu-grid">
-                <!-- Se inyectan productos vía JS -->
                 <div class="text-center col-span-full py-10 text-gray-500"><i class="fa-solid fa-circle-notch fa-spin text-2xl mb-2"></i><br>Cargando menú...</div>
+            </div>
+
+            <!-- BOTONES DE NAVEGACIÓN DEL CARRUSEL (Máximo 6 productos) -->
+            <div id="carrusel-controles" class="hidden flex items-center justify-between max-w-md mx-auto mt-10 px-4">
+                <button id="btn-carrusel-prev" onclick="cambiarPaginaCarrusel(-1)" class="bg-white border border-brand-pink hover:bg-brand-softPink text-brand-brown font-bold px-5 py-2.5 rounded-full shadow-sm transition flex items-center gap-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-chevron-left"></i> Anterior
+                </button>
+                <span id="carrusel-indicador" class="text-sm font-semibold text-brand-darkBrown">Página 1</span>
+                <button id="btn-carrusel-next" onclick="cambiarPaginaCarrusel(1)" class="bg-brand-brown hover:bg-brand-darkBrown text-white font-bold px-5 py-2.5 rounded-full shadow-sm transition flex items-center gap-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed">
+                    Siguiente <i class="fa-solid fa-chevron-right"></i>
+                </button>
             </div>
         </div>
     </section>
@@ -287,16 +296,13 @@
     </a>
 
     <!-- ========================================== -->
-    <!-- LOGICA JAVASCRIPT (SINGLE PAGE APP)        -->
+    <!-- LÓGICA JAVASCRIPT (SINGLE PAGE APP)        -->
     <!-- ========================================== -->
     <script>
         // --- 1. CONFIGURACIÓN PRINCIPAL ---
-        // INSTRUCCIÓN: Cuando tengas tu Google Sheets listo, pega el ID de tu hoja aquí.
-        // Si está vacío (''), el sistema cargará los Datos Mock (Fallback) automáticamente.
         const GOOGLE_SHEET_ID = '1spw4MLp6FRJRMZUDaErfEdKm16scBxCqAX4bV3f2d38'; 
         
-        // --- 2. SISTEMA DE SEGURIDAD (ANTI-XSS) ---
-        // Evita inyección de código malicioso en los textos editables por el cliente.
+        // --- 2. SISTEMA DE SEGURIDAD Y FORMATO ---
         function sanitizarHTML(texto) {
             if (!texto) return '';
             const mapa = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;', "/": '&#x2F;' };
@@ -309,7 +315,6 @@
         }
 
         function generarUrlWa(telefono, mensaje) {
-            // Limpia el teléfono de espacios o símbolos, asume código de Chile +56 si empieza con 9
             let fonoStr = String(telefono).replace(/\D/g, '');
             if(fonoStr.startsWith('9') && fonoStr.length === 8) fonoStr = '569' + fonoStr;
             else if(fonoStr.startsWith('9') && fonoStr.length === 9) fonoStr = '56' + fonoStr;
@@ -317,7 +322,6 @@
         }
 
         // --- 3. DATOS DE RESPALDO (MOCK / FALLBACK) ---
-        // Estos datos se mostrarán si la hoja de Google no está conectada o falla.
         const datosMock = {
             config: {
                 wa_telefono: "+56991510196",
@@ -363,7 +367,12 @@
         let appState = {
             waPhone: "+56991510196",
             menuData: [],
-            cotizadorData: []
+            cotizadorData: [],
+            carrusel: {
+                paginaActual: 0,
+                porPagina: 6,
+                productosFiltrados: []
+            }
         };
 
         async function initApp() {
@@ -375,7 +384,6 @@
             }
 
             try {
-                // Función auxiliar para traer una pestaña específica desde Google Sheets
                 const fetchSheetData = async (sheetName) => {
                     const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
                     const response = await fetch(url);
@@ -385,7 +393,6 @@
                     return json.table.rows;
                 };
 
-                // Promesas en paralelo para mayor velocidad
                 const [configRows, menuRows, cotizadorRows, testRows, sucRows] = await Promise.all([
                     fetchSheetData('Configuracion_General').catch(() => null),
                     fetchSheetData('Menu').catch(() => null),
@@ -394,7 +401,7 @@
                     fetchSheetData('Sucursales').catch(() => null)
                 ]);
 
-                // Procesar configuración general
+                // Configuración
                 let configObj = {};
                 if(configRows) {
                     configRows.forEach(r => {
@@ -404,7 +411,7 @@
                     });
                 } else { configObj = datosMock.config; }
 
-                // Procesar Menú
+                // Menú
                 let menuList = [];
                 if(menuRows) {
                     menuList = menuRows.map(r => ({
@@ -418,7 +425,7 @@
                     })).filter(item => item.disponible === 'SI');
                 } else { menuList = datosMock.menu; }
 
-                // Procesar Cotizador
+                // Cotizador
                 let cotiList = [];
                 if(cotizadorRows) {
                     cotiList = cotizadorRows.map(r => ({
@@ -429,7 +436,6 @@
                     })).filter(item => item.disponible === 'SI');
                 } else { cotiList = datosMock.cotizador; }
 
-                // Procesar Testimonios y Sucursales (Similar mapeo)
                 let testList = testRows ? testRows.map(r => ({
                     autor: r.c[0]?.v || '', estrellas: r.c[1]?.v || '5', comentario: r.c[2]?.v || '', fecha: r.c[3]?.v || '', avatar: r.c[4]?.v || ''
                 })) : datosMock.testimonios;
@@ -438,7 +444,6 @@
                     nombre: r.c[0]?.v || '', direccion: r.c[1]?.v || '', horario: r.c[2]?.v || '', telefono: r.c[3]?.v || '', link_mapa: r.c[4]?.v || '#', etiqueta: r.c[5]?.v || ''
                 })) : datosMock.sucursales;
 
-                // Renderizar los datos obtenidos
                 renderizarTodo({
                     config: configObj,
                     menu: menuList,
@@ -462,7 +467,6 @@
             appState.menuData = data.menu;
             appState.cotizadorData = data.cotizador;
 
-            // Inyectar Configuración
             document.getElementById('hero-title').innerHTML = data.config.hero_titulo ? data.config.hero_titulo : datosMock.config.hero_titulo; 
             document.getElementById('hero-desc').innerText = sanitizarHTML(data.config.hero_descripcion || "");
             if(data.config.hero_img1) document.getElementById('hero-img-1').src = data.config.hero_img1;
@@ -478,14 +482,12 @@
             const instagramUrl = data.config.footer_instagram_url || "#";
             document.getElementById('footer-instagram').href = instagramUrl;
 
-            // Enlaces WhatsApp principales
             const urlWaGeneral = generarUrlWa(appState.waPhone, "Hola Dulce Dani, quisiera hacer una consulta/pedido.");
             document.getElementById('hero-btn-wa').href = urlWaGeneral;
             document.getElementById('btn-flotante-wa').href = urlWaGeneral;
 
-            // Renderizar Componentes
             renderMenuCategorias(appState.menuData);
-            renderMenuGrid(appState.menuData, 'Todos');
+            filtrarMenu('Todos'); // Inicializa carrusel en 'Todos'
             renderCotizadorOpciones(appState.cotizadorData);
             renderTestimonios(data.testimonios);
             renderSucursales(data.sucursales);
@@ -493,7 +495,6 @@
 
         function renderMenuCategorias(menuData) {
             const container = document.getElementById('menu-filtros');
-            // Obtener categorías únicas
             const categorias = [...new Set(menuData.map(item => item.categoria))].filter(Boolean);
             
             let html = `<button onclick="filtrarMenu('Todos')" class="menu-tab-btn active bg-brand-brown text-white px-5 py-2.5 rounded-full text-sm font-medium shadow transition">Todos</button>`;
@@ -504,9 +505,7 @@
             container.innerHTML = html;
         }
 
-        // Variable global para filtrarMenu
         window.filtrarMenu = function(categoriaFilter) {
-            // Actualizar UI Botones
             const botones = document.querySelectorAll('.menu-tab-btn');
             botones.forEach(btn => {
                 if(btn.innerText === categoriaFilter || (categoriaFilter === 'Todos' && btn.innerText === 'Todos')){
@@ -515,21 +514,41 @@
                     btn.className = "menu-tab-btn bg-white hover:bg-brand-softPink text-brand-brown border border-brand-pink/50 px-5 py-2.5 rounded-full text-sm font-medium shadow-sm transition";
                 }
             });
-            renderMenuGrid(appState.menuData, categoriaFilter);
+
+            // Lógica del filtro y reinicio de carrusel a página 0
+            appState.carrusel.productosFiltrados = categoriaFilter === 'Todos' 
+                ? appState.menuData 
+                : appState.menuData.filter(item => item.categoria === categoriaFilter);
+            
+            appState.carrusel.paginaActual = 0;
+            renderMenuGridCarrusel();
         };
 
-        function renderMenuGrid(menuData, categoriaFilter) {
+        function renderMenuGridCarrusel() {
             const container = document.getElementById('menu-grid');
-            container.innerHTML = '';
+            const controles = document.getElementById('carrusel-controles');
+            const btnPrev = document.getElementById('btn-carrusel-prev');
+            const btnNext = document.getElementById('btn-carrusel-next');
+            const indicador = document.getElementById('carrusel-indicador');
             
-            const filtrados = categoriaFilter === 'Todos' ? menuData : menuData.filter(item => item.categoria === categoriaFilter);
+            container.innerHTML = '';
 
-            if(filtrados.length === 0){
+            const lista = appState.carrusel.productosFiltrados;
+            const porPagina = appState.carrusel.porPagina;
+            const pagina = appState.carrusel.paginaActual;
+            const totalPaginas = Math.ceil(lista.length / porPagina);
+
+            if(lista.length === 0){
                 container.innerHTML = `<p class="col-span-full text-center text-gray-500 py-8">No hay productos en esta categoría.</p>`;
+                controles.classList.add('hidden');
                 return;
             }
 
-            filtrados.forEach(prod => {
+            // Seleccionar únicamente los 6 productos de la página actual
+            const inicio = pagina * porPagina;
+            const visibles = lista.slice(inicio, inicio + porPagina);
+
+            visibles.forEach(prod => {
                 const badgeHTML = prod.etiqueta ? `<span class="absolute top-3 right-3 bg-brand-brown text-white text-xs px-3 py-1 rounded-full font-semibold shadow">${sanitizarHTML(prod.etiqueta)}</span>` : '';
                 const imgSrc = prod.imagen || 'https://placehold.co/600x400/FDF0F3/4A2C2A?text=Producto';
                 const msgPedir = `Hola, quisiera pedir: ${prod.nombre}`;
@@ -555,7 +574,28 @@
                 `;
                 container.innerHTML += card;
             });
+
+            // Mostrar/Ocultar y configurar controles del carrusel si hay más de 6 productos
+            if (totalPaginas > 1) {
+                controles.classList.remove('hidden');
+                controles.classList.add('flex');
+                
+                indicador.innerText = `Página ${pagina + 1} de ${totalPaginas}`;
+                btnPrev.disabled = (pagina === 0);
+                btnNext.disabled = (pagina >= totalPaginas - 1);
+            } else {
+                controles.classList.add('hidden');
+                controles.classList.remove('flex');
+            }
         }
+
+        window.cambiarPaginaCarrusel = function(direccion) {
+            appState.carrusel.paginaActual += direccion;
+            renderMenuGridCarrusel();
+            
+            // Scroll suave al inicio de la sección de menú al cambiar de página
+            document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });
+        };
 
         function renderCotizadorOpciones(cotizadorData) {
             const selTamano = document.getElementById('cotizador-tamano');
@@ -585,12 +625,11 @@
                 }
             });
 
-            // Listeners para calcular en tiempo real
             selTamano.addEventListener('change', calcularCotizacion);
             selSabor.addEventListener('change', calcularCotizacion);
             document.querySelectorAll('.coti-extra').forEach(cb => cb.addEventListener('change', calcularCotizacion));
             
-            calcularCotizacion(); // Calculo Inicial
+            calcularCotizacion();
         }
 
         function renderTestimonios(testData) {
@@ -648,7 +687,6 @@
 
         // --- 6. LÓGICA DE INTERACTIVIDAD ---
         function iniciarInteractividad() {
-            // Mobile Menu Toggle
             const btn = document.getElementById('mobile-menu-btn');
             const menu = document.getElementById('mobile-menu');
             const links = document.querySelectorAll('.mobile-link');
@@ -656,9 +694,8 @@
             btn.addEventListener('click', () => menu.classList.toggle('hidden'));
             links.forEach(l => l.addEventListener('click', () => menu.classList.add('hidden')));
 
-            // Evaluar horario de apertura local (Chile asume horario de sistema de cliente)
             evaluarEstadoApertura();
-            setInterval(evaluarEstadoApertura, 60000); // Actualizar cada minuto
+            setInterval(evaluarEstadoApertura, 60000);
         }
 
         function evaluarEstadoApertura() {
@@ -668,7 +705,6 @@
             const minutos = ahora.getMinutes();
             const tiempoMinutos = horas * 60 + minutos;
 
-            // Rango de 09:30 a 21:00 (570 a 1260 minutos)
             const abre = 9 * 60 + 30;
             const cierra = 21 * 60;
 
@@ -698,7 +734,6 @@
             const total = pTamano + pSabor + pExtras;
             document.getElementById('precio-total-cotizacion').innerText = formatoCLP(total);
 
-            // Preparar botón enviar WhatsApp
             const nTamano = selTamano.options[selTamano.selectedIndex]?.text.split(' - ')[0] || '';
             const nSabor = selSabor.options[selSabor.selectedIndex]?.text.split(' (+')[0] || '';
             
